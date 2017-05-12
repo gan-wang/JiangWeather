@@ -1,8 +1,10 @@
 package com.jiangweather.android.util;
 
+import com.google.gson.Gson;
 import com.jiangweather.android.db.City;
 import com.jiangweather.android.db.County;
 import com.jiangweather.android.db.Province;
+import com.jiangweather.android.gson.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,6 +15,8 @@ import org.json.JSONObject;
  */
 
 public class Utility {
+
+
     public static boolean handleProvinceResponse(String response){
         try {
             JSONArray allProvinces = new JSONArray(response);
@@ -22,7 +26,6 @@ public class Utility {
                 province.setProvinceName(provinceObject.getString("name"));
                 province.setProvinceCode(provinceObject.getInt("id"));
                 province.save();
-
             }
             return true;
         } catch (JSONException e) {
@@ -66,4 +69,20 @@ public class Utility {
         }
         return false;
     }
+
+    /**
+     * 将返回的JSON数据解析成Weather实体类
+     */
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
